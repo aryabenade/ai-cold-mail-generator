@@ -12,6 +12,9 @@ connectDB();
 
 const app = express();
 
+//Middleware
+app.use(express.json());
+
 const PORT = process.env.PORT || 3000;
 
 app.use('/api/auth', authRoutes);

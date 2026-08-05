@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6,
     },
-    name: {
+    username: {
         type: String,
         required: true,
     },
@@ -32,16 +32,15 @@ const userSchema = new mongoose.Schema({
 
 
 //hash password before saving user
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (!this.isModified('password')) {
-        return next();
+        return;
     }
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
-        next();
     } catch (error) {
-        next(error);
+        console.error('Error hashing password:', error);
     }
 })
 
