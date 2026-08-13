@@ -6,6 +6,7 @@ import Signup from "./pages/Signup"
 import Login from "./pages/Login"
 import VerifyOtp from "./pages/VerifyOtp"
 import Dashboard from "./pages/Dashboard"
+import Layout from "./components/Layout"
 
 const App = () => {
 
