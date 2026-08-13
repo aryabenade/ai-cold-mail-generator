@@ -16,7 +16,7 @@ const Signup = () => {
         try {
             const { data } = await api.post('/auth/register', { username: name, email, password });
             toast.success(data.message);
-            navigate('/verify-otp', { state: { userId: data.userId, email } });
+            navigate('/verify-otp', { state: { userId: data?.user?._id, email } });
         } catch (error) {
             toast.error(error.response?.data?.message || 'Registration failed');
         } finally {
