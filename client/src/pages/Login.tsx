@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 const Login = () => {
     
@@ -12,7 +13,7 @@ const Login = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         try {
@@ -21,7 +22,11 @@ const Login = () => {
             toast.success('Logged in successfully!');
             navigate('/dashboard');
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Login failed');
+            if(axios.isAxiosError(error)) {
+                toast.error(error.response?.data?.message || 'Login failed');
+            } else {
+                toast.error('Login failed');
+            }
         } finally {
             setLoading(false);
         }

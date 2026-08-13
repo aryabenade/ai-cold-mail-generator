@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../utils/api';
+import axios from 'axios';
 
 const Signup = () => {
     const [name, setName] = useState('');
@@ -10,7 +11,7 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         try {
@@ -18,7 +19,11 @@ const Signup = () => {
             toast.success(data.message);
             navigate('/verify-otp', { state: { userId: data?.user?._id, email } });
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Registration failed');
+            if(axios.isAxiosError(error)) {
+                toast.error(error.response?.data?.message || 'Registration failed');
+            } else {
+                toast.error('Registration failed');
+            }
         } finally {
             setLoading(false);
         }

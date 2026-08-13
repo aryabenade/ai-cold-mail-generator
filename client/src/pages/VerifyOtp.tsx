@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 const VerifyOtp = () => {
     const [otp, setOtp] = useState('');
@@ -25,7 +26,7 @@ const VerifyOtp = () => {
     //     return null;
     // }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         try {
@@ -34,7 +35,11 @@ const VerifyOtp = () => {
             toast.success('Email verified successfully!');
             navigate('/dashboard');
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Verification failed');
+            if (axios.isAxiosError(error)) {
+                toast.error(error.response?.data?.message || 'Verification failed');
+            } else {
+                toast.error('Verification failed');
+            }
         } finally {
             setLoading(false);
         }

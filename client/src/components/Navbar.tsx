@@ -8,7 +8,7 @@ const Navbar = () => {
     return (
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0">
             <div className="text-lg font-medium text-gray-800 hidden md:block">
-                Welcome back, {user?.name || 'User'}
+                Welcome back, {user?.username || 'User'}
             </div>
             {/* Mobile Title */}
             <div className="text-lg font-bold text-primary-600 md:hidden">

@@ -3,13 +3,50 @@ import { toast } from 'react-hot-toast';
 import api from '../utils/api';
 import { ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 
+// 1. Create a "blueprint" (Type) for your AI result
+interface GeneratedEmailData {
+    subject: string;
+    emailBody: string;
+    linkedInDM: string;
+    followUpEmail: string;
+};
+
+interface ResultCardProps {
+    title: string;
+    content: string;
+    type: string;
+    copied: string;
+    copyToClipboard: (text: string, type: string) => void;
+}
+
+const ResultCard = ({ title, content, type, copied,copyToClipboard }: ResultCardProps) => (
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-4">
+        <div className="flex justify-between items-center mb-3">
+            <h3 className="font-medium text-gray-800">{title}</h3>
+            <button
+                onClick={() => copyToClipboard(content, type)}
+                className="text-gray-400 hover:text-primary-600 transition-colors"
+                title="Copy"
+            >
+                {copied === type ? (
+                    <CheckIcon className="w-5 h-5 text-green-500" />
+                ) : (
+                    <ClipboardDocumentIcon className="w-5 h-5" />
+                )}
+            </button>
+        </div>
+        <p className="text-sm text-gray-600 whitespace-pre-wrap">{content}</p>
+    </div>
+);
+
+
 const Dashboard = () => {
     const [prompt, setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState(null);
+    const [result, setResult] = useState<GeneratedEmailData | null>(null);
     const [copied, setCopied] = useState('');
 
-    const handleGenerate = async (e) => {
+    const handleGenerate = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!prompt.trim()) return;
 
@@ -25,32 +62,14 @@ const Dashboard = () => {
         }
     };
 
-    const copyToClipboard = (text, type) => {
+    const copyToClipboard = (text: string, type: string) => {
         navigator.clipboard.writeText(text);
         setCopied(type);
         toast.success('Copied to clipboard!');
         setTimeout(() => setCopied(''), 2000);
     };
 
-    const ResultCard = ({ title, content, type }) => (
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-4">
-            <div className="flex justify-between items-center mb-3">
-                <h3 className="font-medium text-gray-800">{title}</h3>
-                <button
-                    onClick={() => copyToClipboard(content, type)}
-                    className="text-gray-400 hover:text-primary-600 transition-colors"
-                    title="Copy"
-                >
-                    {copied === type ? (
-                        <CheckIcon className="w-5 h-5 text-green-500" />
-                    ) : (
-                        <ClipboardDocumentIcon className="w-5 h-5" />
-                    )}
-                </button>
-            </div>
-            <p className="text-sm text-gray-600 whitespace-pre-wrap">{content}</p>
-        </div>
-    );
+
 
     return (
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 h-[calc(100vh-8rem)]">
@@ -88,10 +107,10 @@ const Dashboard = () => {
                 {result ? (
                     <div>
                         <h2 className="text-lg font-semibold text-gray-800 mb-4">AI Results</h2>
-                        <ResultCard title="Subject Line" content={result.subject} type="subject" />
-                        <ResultCard title="Cold Email" content={result.emailBody} type="email" />
-                        <ResultCard title="LinkedIn DM" content={result.linkedInDM} type="linkedin" />
-                        <ResultCard title="Follow-up Email" content={result.followUpEmail} type="followup" />
+                        <ResultCard title="Subject Line" content={result.subject} type="subject" copied={copied} copyToClipboard={copyToClipboard} />
+                        <ResultCard title="Cold Email" content={result.emailBody} type="email" copied={copied} copyToClipboard={copyToClipboard} />
+                        <ResultCard title="LinkedIn DM" content={result.linkedInDM} type="linkedin" copied={copied} copyToClipboard={copyToClipboard} />
+                        <ResultCard title="Follow-up Email" content={result.followUpEmail} type="followup" copied={copied} copyToClipboard={copyToClipboard} />
                     </div>
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-white border border-gray-200 rounded-xl">

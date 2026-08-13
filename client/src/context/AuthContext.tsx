@@ -1,16 +1,27 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
+interface UserProfile{
+    email: string;
+    username: string;
+}
+
+interface LoginResponse {
+   message: string;
+   token: string;
+   user: UserProfile;
+} 
+
 interface AuthContextType {
-    user: any;
+    user: UserProfile | null;
     loading: boolean;
-    login: (userData: any) => void;
+    login: (apiData: LoginResponse) => void;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -20,15 +31,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setUser(JSON.parse(userInfo));
             } catch (error) {
                 localStorage.removeItem("user");
+                localStorage.removeItem("token");
             }
         }
         setLoading(false);
     }, []);
 
-    const login = (userData: any) => {
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("token", userData.token);
-        setUser(userData);
+    const login = (apiData: LoginResponse) => {
+        localStorage.setItem("user", JSON.stringify(apiData.user));
+        localStorage.setItem("token", apiData.token);
+        setUser(apiData.user);
     }
 
     const logout = () => {
